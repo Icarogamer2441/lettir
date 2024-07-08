@@ -207,7 +207,7 @@ def comp(code, output, compile, islib, libpath):
                 out.write("  push rax\n")
                 out.write("  push rbx\n")
             elif token in macros:
-                normalcode(macros[token])
+                normalcode(" ".join(macros[token]))
             elif token == "cprint":
                 out.write("  ;; cprint\n")
                 out.write("  pop rax\n")
