@@ -207,7 +207,7 @@ def comp(code, output, compile, islib, libpath):
                 out.write("  push rbx\n")
             elif token in macros:
                 out.write(f"  ;; call macro {token}\n")
-                out.write(f"  {token}")
+                out.write(f"  {token}\n")
             elif token == "cprint":
                 out.write("  ;; cprint\n")
                 out.write("  pop rax\n")
