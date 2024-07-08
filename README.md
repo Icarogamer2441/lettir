@@ -136,7 +136,7 @@ fnc init
     0 exit
 end
 ```
-because this won't work because the pushe's are local (because of assembly)
+because this won't work because the pushes are local (because of assembly)
 
 ## exit syscall
 ```lettir
@@ -164,7 +164,7 @@ fnc init
 end
 ```
 
-you can do function things with macros but the push's are not local!
+you can do function things with macros but the pushes are not local!
 # strings
 you can create strings!:
 ```
