@@ -31,222 +31,227 @@ def comp(code, output, compile, islib, libpath):
     macroname = [""]
 
     def normalcode(codee):
-        token = codee
-        if not in_str[0] and not in_comment[0]:
-            if token.isdigit() or (token.startswith("-") and token[1:].isdigit()):
-                out.write(f"  ;; push {token}\n")
-                out.write(f"  push {token}\n")
-            elif token == "pop":
-                out.write(f"  ;; pop\n")
-                out.write(f"  pop rax\n")
-            elif token == "+":
-                out.write("  ;; plus\n")
-                out.write("  pop rbx\n")
-                out.write("  pop rax\n")
-                out.write("  add rax, rbx\n")
-                out.write("  push rax\n")
-            elif token == "-":
-                out.write("  ;; minus\n")
-                out.write("  pop rbx\n")
-                out.write("  pop rax\n")
-                out.write("  sub rax, rbx\n")
-                out.write("  push rax\n")
-            elif token == "print":
-                partnum[0] += 1
-                out.write("  ;; print\n")
-                out.write(f"part_{partnum[0]}:\n")
-                out.write("  pop rax\n")
-                out.write("  mov rbx, buffer + 19\n")
-                out.write("  mov byte [rbx], 0x0A\n")
-                out.write("  mov rcx, 10\n")
-                out.write("  test rax, rax\n")
-                out.write(f"  js negative_{partnum[0]}\n")
-                out.write(f"convert_loop_{partnum[0]}:\n")
-                out.write("  xor rdx, rdx\n")
-                out.write("  div rcx\n")
-                out.write("  add dl, '0'\n")
-                out.write("  dec rbx\n")
-                out.write("  mov [rbx], dl\n")
-                out.write("  test rax, rax\n")
-                out.write(f"  jnz convert_loop_{partnum[0]}\n")
-                out.write(f"  jmp print_number_{partnum[0]}\n")
-                out.write(f"negative_{partnum[0]}:\n")
-                out.write("  neg rax\n")
-                out.write(f"convert_loop_neg_{partnum[0]}:\n")
-                out.write("  xor rdx, rdx\n")
-                out.write("  div rcx\n")
-                out.write("  add dl, '0'\n")
-                out.write("  dec rbx\n")
-                out.write("  mov [rbx], dl\n")
-                out.write("  test rax, rax\n")
-                out.write(f"  jnz convert_loop_neg_{partnum[0]}\n")
-                out.write("  dec rbx\n")
-                out.write("  mov byte [rbx], '-'\n")
-                out.write(f"print_number_{partnum[0]}:\n")
-                out.write("  mov rax, 1\n")
-                out.write("  mov rdi, 1\n")
-                out.write("  lea rsi, [rbx]\n")
-                out.write("  mov rdx, buffer + 20\n")
-                out.write("  sub rdx, rbx\n")
-                out.write("  syscall\n")
-            elif token == "exit":
-                out.write("  ;; exit\n")
-                out.write("  mov rax, 60\n")
-                out.write("  pop rdi\n")
-                out.write("  syscall\n")
-            elif token in functions:
-                out.write(f"  ;; call {token}\n")
-                out.write(f"  call {token}\n")
-            elif token == "==":
-                partnum[0] += 1
-                out.write("  ;; ==\n")
-                out.write("  pop rbx\n")
-                out.write("  pop rax\n")
-                out.write("  cmp rax, rbx\n")
-                out.write(f"  jne not_equal_{partnum[0]}\n")
-                out.write("  push 1\n")
-                out.write(f"  jmp end_{partnum[0]}\n")
-                out.write(f"not_equal_{partnum[0]}:\n")
-                out.write("  push 0\n")
-                out.write(f"end_{partnum[0]}:\n")
-            elif token == "!=":
-                partnum[0] += 1
-                out.write("  ;; !=\n")
-                out.write("  pop rbx\n")
-                out.write("  pop rax\n")
-                out.write("  cmp rax, rbx\n")
-                out.write(f"  je equal_{partnum[0]}\n")
-                out.write("  push 1\n")
-                out.write(f"  jmp end_{partnum[0]}\n")
-                out.write(f"equal_{partnum[0]}:\n")
-                out.write("  push 0\n")
-                out.write(f"end_{partnum[0]}:\n")
-            elif token == "<":
-                partnum[0] += 1
-                out.write("  ;; <\n")
-                out.write("  pop rbx\n")
-                out.write("  pop rax\n")
-                out.write("  cmp rax, rbx\n")
-                out.write(f"  jge not_less_{partnum[0]}\n")
-                out.write("  push 1\n")
-                out.write(f"  jmp end_{partnum[0]}\n")
-                out.write(f"not_less_{partnum[0]}:\n")
-                out.write("  push 0\n")
-                out.write(f"end_{partnum[0]}:\n")
-            elif token == ">":
-                partnum[0] += 1
-                out.write("  ;; >\n")
-                out.write("  pop rbx\n")
-                out.write("  pop rax\n")
-                out.write("  cmp rax, rbx\n")
-                out.write(f"  jle not_greater_{partnum[0]}\n")
-                out.write("  push 1\n")
-                out.write(f"  jmp end_{partnum[0]}\n")
-                out.write(f"not_greater_{partnum[0]}:\n")
-                out.write("  push 0\n")
-                out.write(f"end_{partnum[0]}:\n")
-            elif token == "<=":
-                partnum[0] += 1
-                out.write("  ;; <=\n")
-                out.write("  pop rbx\n")
-                out.write("  pop rax\n")
-                out.write("  cmp rax, rbx\n")
-                out.write(f"  jg not_less_equal_{partnum[0]}\n")
-                out.write("  push 1\n")
-                out.write(f"  jmp end_{partnum[0]}\n")
-                out.write(f"not_less_equal_{partnum[0]}:\n")
-                out.write("  push 0\n")
-                out.write(f"end_{partnum[0]}:\n")
-            elif token == ">=":
-                partnum[0] += 1
-                out.write("  ;; >=\n")
-                out.write("  pop rbx\n")
-                out.write("  pop rax\n")
-                out.write("  cmp rax, rbx\n")
-                out.write(f"  jl not_greater_equal_{partnum[0]}\n")
-                out.write("  push 1\n")
-                out.write(f"  jmp end_{partnum[0]}\n")
-                out.write(f"not_greater_equal_{partnum[0]}:\n")
-                out.write("  push 0\n")
-                out.write(f"end_{partnum[0]}:\n")
-            elif token == "if":
-                partnum[0] += 1
-                out.write("  ;; if\n")
-                out.write("  pop rax\n")
-                out.write("  cmp rax, 1\n")
-                out.write(f"  je ifcode_{partnum[0]}\n")
-                out.write(f"  jmp end_{partnum[0]}\n")
-                out.write(f"ifcode_{partnum[0]}:\n")
-                recentif.append(partnum[0])
-            elif token == "ifend":
-                ifnum = recentif.pop()
-                out.write(f"end_{ifnum}:")
-            elif token == "while":
-                partnum[0] += 1
-                out.write("  ;; while\n")
-                out.write(f"whilecode_{partnum[0]}:\n")
-                recentwhile.append(partnum[0])
-            elif token == "whend":
-                whilenum = recentwhile.pop()
-                out.write(f"  jmp whilecode_{whilenum}\n")
-                out.write(f"end_{whilenum}:")
-            elif token == "stop":
-                whilenum = recentwhile.pop()
-                recentwhile.append(whilenum)
-                out.write("  ;; stop while\n")
-                out.write(f"  jmp end_{whilenum}\n")
-            elif token == "dup":
-                out.write("  ;; dup\n")
-                out.write("  pop rax\n")
-                out.write("  push rax\n")
-                out.write("  push rax\n")
-            elif token == "swap":
-                out.write("  ;; swap\n")
-                out.write("  pop rax\n")
-                out.write("  pop rbx\n")
-                out.write("  push rax\n")
-                out.write("  push rbx\n")
-            elif token in macros.keys():
-                normalcode(" ".join(macros[token]))
-            elif token == "cprint":
-                out.write("  ;; cprint\n")
-                out.write("  pop rax\n")
-                out.write("  mov [buffer], rax\n")
-                out.write("  mov rsi, buffer\n")
-                out.write("  mov rdx, 1\n")
-                out.write("  mov rax, 1\n")
-                out.write("  mov rdi, 1\n")
-                out.write("  syscall\n")
-            elif token.startswith("\""):
+        tokens = codee.split()
+        tokenpos = 1
+        while tokenpos <= len(tokens):
+            token = tokens[tokenpos - 1]
+            tokenpos += 1
+            
+            if not in_str[0] and not in_comment[0]:
+                if token.isdigit() or (token.startswith("-") and token[1:].isdigit()):
+                    out.write(f"  ;; push {token}\n")
+                    out.write(f"  push {token}\n")
+                elif token == "pop":
+                    out.write(f"  ;; pop\n")
+                    out.write(f"  pop rax\n")
+                elif token == "+":
+                    out.write("  ;; plus\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  add rax, rbx\n")
+                    out.write("  push rax\n")
+                elif token == "-":
+                    out.write("  ;; minus\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  sub rax, rbx\n")
+                    out.write("  push rax\n")
+                elif token == "print":
+                    partnum[0] += 1
+                    out.write("  ;; print\n")
+                    out.write(f"part_{partnum[0]}:\n")
+                    out.write("  pop rax\n")
+                    out.write("  mov rbx, buffer + 19\n")
+                    out.write("  mov byte [rbx], 0x0A\n")
+                    out.write("  mov rcx, 10\n")
+                    out.write("  test rax, rax\n")
+                    out.write(f"  js negative_{partnum[0]}\n")
+                    out.write(f"convert_loop_{partnum[0]}:\n")
+                    out.write("  xor rdx, rdx\n")
+                    out.write("  div rcx\n")
+                    out.write("  add dl, '0'\n")
+                    out.write("  dec rbx\n")
+                    out.write("  mov [rbx], dl\n")
+                    out.write("  test rax, rax\n")
+                    out.write(f"  jnz convert_loop_{partnum[0]}\n")
+                    out.write(f"  jmp print_number_{partnum[0]}\n")
+                    out.write(f"negative_{partnum[0]}:\n")
+                    out.write("  neg rax\n")
+                    out.write(f"convert_loop_neg_{partnum[0]}:\n")
+                    out.write("  xor rdx, rdx\n")
+                    out.write("  div rcx\n")
+                    out.write("  add dl, '0'\n")
+                    out.write("  dec rbx\n")
+                    out.write("  mov [rbx], dl\n")
+                    out.write("  test rax, rax\n")
+                    out.write(f"  jnz convert_loop_neg_{partnum[0]}\n")
+                    out.write("  dec rbx\n")
+                    out.write("  mov byte [rbx], '-'\n")
+                    out.write(f"print_number_{partnum[0]}:\n")
+                    out.write("  mov rax, 1\n")
+                    out.write("  mov rdi, 1\n")
+                    out.write("  lea rsi, [rbx]\n")
+                    out.write("  mov rdx, buffer + 20\n")
+                    out.write("  sub rdx, rbx\n")
+                    out.write("  syscall\n")
+                elif token == "exit":
+                    out.write("  ;; exit\n")
+                    out.write("  mov rax, 60\n")
+                    out.write("  pop rdi\n")
+                    out.write("  syscall\n")
+                elif token in functions:
+                    out.write(f"  ;; call {token}\n")
+                    out.write(f"  call {token}\n")
+                elif token == "==":
+                    partnum[0] += 1
+                    out.write("  ;; ==\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  cmp rax, rbx\n")
+                    out.write(f"  jne not_equal_{partnum[0]}\n")
+                    out.write("  push 1\n")
+                    out.write(f"  jmp end_{partnum[0]}\n")
+                    out.write(f"not_equal_{partnum[0]}:\n")
+                    out.write("  push 0\n")
+                    out.write(f"end_{partnum[0]}:\n")
+                elif token == "!=":
+                    partnum[0] += 1
+                    out.write("  ;; !=\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  cmp rax, rbx\n")
+                    out.write(f"  je equal_{partnum[0]}\n")
+                    out.write("  push 1\n")
+                    out.write(f"  jmp end_{partnum[0]}\n")
+                    out.write(f"equal_{partnum[0]}:\n")
+                    out.write("  push 0\n")
+                    out.write(f"end_{partnum[0]}:\n")
+                elif token == "<":
+                    partnum[0] += 1
+                    out.write("  ;; <\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  cmp rax, rbx\n")
+                    out.write(f"  jge not_less_{partnum[0]}\n")
+                    out.write("  push 1\n")
+                    out.write(f"  jmp end_{partnum[0]}\n")
+                    out.write(f"not_less_{partnum[0]}:\n")
+                    out.write("  push 0\n")
+                    out.write(f"end_{partnum[0]}:\n")
+                elif token == ">":
+                    partnum[0] += 1
+                    out.write("  ;; >\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  cmp rax, rbx\n")
+                    out.write(f"  jle not_greater_{partnum[0]}\n")
+                    out.write("  push 1\n")
+                    out.write(f"  jmp end_{partnum[0]}\n")
+                    out.write(f"not_greater_{partnum[0]}:\n")
+                    out.write("  push 0\n")
+                    out.write(f"end_{partnum[0]}:\n")
+                elif token == "<=":
+                    partnum[0] += 1
+                    out.write("  ;; <=\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  cmp rax, rbx\n")
+                    out.write(f"  jg not_less_equal_{partnum[0]}\n")
+                    out.write("  push 1\n")
+                    out.write(f"  jmp end_{partnum[0]}\n")
+                    out.write(f"not_less_equal_{partnum[0]}:\n")
+                    out.write("  push 0\n")
+                    out.write(f"end_{partnum[0]}:\n")
+                elif token == ">=":
+                    partnum[0] += 1
+                    out.write("  ;; >=\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  cmp rax, rbx\n")
+                    out.write(f"  jl not_greater_equal_{partnum[0]}\n")
+                    out.write("  push 1\n")
+                    out.write(f"  jmp end_{partnum[0]}\n")
+                    out.write(f"not_greater_equal_{partnum[0]}:\n")
+                    out.write("  push 0\n")
+                    out.write(f"end_{partnum[0]}:\n")
+                elif token == "if":
+                    partnum[0] += 1
+                    out.write("  ;; if\n")
+                    out.write("  pop rax\n")
+                    out.write("  cmp rax, 1\n")
+                    out.write(f"  je ifcode_{partnum[0]}\n")
+                    out.write(f"  jmp end_{partnum[0]}\n")
+                    out.write(f"ifcode_{partnum[0]}:\n")
+                    recentif.append(partnum[0])
+                elif token == "ifend":
+                    ifnum = recentif.pop()
+                    out.write(f"end_{ifnum}:")
+                elif token == "while":
+                    partnum[0] += 1
+                    out.write("  ;; while\n")
+                    out.write(f"whilecode_{partnum[0]}:\n")
+                    recentwhile.append(partnum[0])
+                elif token == "whend":
+                    whilenum = recentwhile.pop()
+                    out.write(f"  jmp whilecode_{whilenum}\n")
+                    out.write(f"end_{whilenum}:")
+                elif token == "stop":
+                    whilenum = recentwhile.pop()
+                    recentwhile.append(whilenum)
+                    out.write("  ;; stop while\n")
+                    out.write(f"  jmp end_{whilenum}\n")
+                elif token == "dup":
+                    out.write("  ;; dup\n")
+                    out.write("  pop rax\n")
+                    out.write("  push rax\n")
+                    out.write("  push rax\n")
+                elif token == "swap":
+                    out.write("  ;; swap\n")
+                    out.write("  pop rax\n")
+                    out.write("  pop rbx\n")
+                    out.write("  push rax\n")
+                    out.write("  push rbx\n")
+                elif token in macros.keys():
+                    normalcode(" ".join(macros[token]))
+                elif token == "cprint":
+                    out.write("  ;; cprint\n")
+                    out.write("  pop rax\n")
+                    out.write("  mov [buffer], rax\n")
+                    out.write("  mov rsi, buffer\n")
+                    out.write("  mov rdx, 1\n")
+                    out.write("  mov rax, 1\n")
+                    out.write("  mov rdi, 1\n")
+                    out.write("  syscall\n")
+                elif token.startswith("\""):
+                    if token.endswith("\""):
+                        finalstr.append(token.replace("\"", "").replace("\\n", "\n").replace("/n", "\\n"))
+                        out.write("  push 0\n")
+                        for letter in " ".join(finalstr)[::-1]:
+                            out.write(f"  push {ord(letter)}\n")
+                        finalstr.clear()
+                    else:
+                        finalstr.append(token.replace("\"", "").replace("\\n", "\n").replace("/n", "\\n"))
+                        in_str[0] = True
+                elif token == "/*":
+                    in_comment[0] = True
+                else:
+                    print(f"Error: unknown keyword: {token}")
+                    sys.exit(1)
+            elif in_str[0]:
                 if token.endswith("\""):
                     finalstr.append(token.replace("\"", "").replace("\\n", "\n").replace("/n", "\\n"))
                     out.write("  push 0\n")
                     for letter in " ".join(finalstr)[::-1]:
                         out.write(f"  push {ord(letter)}\n")
                     finalstr.clear()
+                    in_str[0] = False
                 else:
                     finalstr.append(token.replace("\"", "").replace("\\n", "\n").replace("/n", "\\n"))
-                    in_str[0] = True
-            elif token == "/*":
-                in_comment[0] = True
-            else:
-                print(f"Error: unknown keyword: {token}")
-                sys.exit(1)
-        elif in_str[0]:
-            if token.endswith("\""):
-                finalstr.append(token.replace("\"", "").replace("\\n", "\n").replace("/n", "\\n"))
-                out.write("  push 0\n")
-                for letter in " ".join(finalstr)[::-1]:
-                    out.write(f"  push {ord(letter)}\n")
-                finalstr.clear()
-                in_str[0] = False
-            else:
-                finalstr.append(token.replace("\"", "").replace("\\n", "\n").replace("/n", "\\n"))
-        elif in_comment[0]:
-            if token == "*/":
-                in_comment[0] = False
-            else:
-                pass
+            elif in_comment[0]:
+                if token == "*/":
+                    in_comment[0] = False
+                else:
+                    pass
 
     if not islib:
         with open(f"{output}.asm", "w") as outt:
