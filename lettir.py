@@ -206,7 +206,7 @@ def comp(code, output, compile, islib, libpath):
                 out.write("  pop rbx\n")
                 out.write("  push rax\n")
                 out.write("  push rbx\n")
-            elif token in macros:
+            elif token in macros.keys():
                 normalcode(" ".join(macros[token]))
             elif token == "cprint":
                 out.write("  ;; cprint\n")
@@ -229,6 +229,8 @@ def comp(code, output, compile, islib, libpath):
                     in_str[0] = True
             elif token == "/*":
                 in_comment[0] = True
+            else:
+                print(f"Error: unknown keyword: {token}")
         elif in_str[0]:
             if token.endswith("\""):
                 finalstr.append(token.replace("\"", "").replace("\\n", "\n").replace("/n", "\\n"))

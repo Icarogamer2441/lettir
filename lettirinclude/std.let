@@ -12,5 +12,5 @@ macro true
 end
 
 macro false
-    1
+    0
 end
