@@ -6,7 +6,7 @@ this language only supports compile to linux x86_64 at the moment
 <br>
 executing:
 ```console
-python ./lettir.py -o [inputfile].let [outputexec]
+python ./lettir.py -o [inputfile.let] [outputexec]
 ```
 don't use the "[" and "]" this [] is only an example!
 
