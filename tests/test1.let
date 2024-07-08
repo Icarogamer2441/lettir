@@ -1,0 +1,5 @@
+fnc init
+    10 9 + 5 - print
+
+    0 exit
+end

@@ -1,0 +1,16 @@
+macro puts
+    while
+        dup 0 == if
+            pop stop
+        ifend
+        cprint
+    whend
+end
+
+macro true
+    1
+end
+
+macro false
+    1
+end

@@ -1,0 +1,9 @@
+macro test1
+    10
+end
+
+fnc init
+    test1 print
+
+    0 exit
+end

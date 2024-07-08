@@ -1,0 +1,5 @@
+fnc init
+    65 cprint
+
+    0 exit
+end

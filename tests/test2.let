@@ -1,0 +1,5 @@
+fnc init
+    10 dup 5 >= if
+        stop
+    ifend
+end

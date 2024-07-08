@@ -1,0 +1,7 @@
+include std.let
+
+fnc init
+    "Hello world!\n" puts
+
+    0 exit
+end

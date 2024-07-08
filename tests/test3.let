@@ -1,0 +1,11 @@
+fnc init
+    0 while
+        dup 5 >= if
+            stop
+        ifend
+        1 +
+        dup print
+    whend
+
+    0 exit
+end
