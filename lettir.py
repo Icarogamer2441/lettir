@@ -359,7 +359,6 @@ def comp(code, output, compile, islib, libpath):
     if compile:
         subprocess.run(f"nasm -f elf64 -o {output}.o {output}.asm", shell=True)
         subprocess.run(f"ld -o {output} {output}.o", shell=True)
-        subprocess.run(f"rm -rf {output}.o {output}.asm", shell=True)
 
 if __name__ == "__main__":
     version = "1.0"
@@ -378,6 +377,10 @@ if __name__ == "__main__":
                 if inputfile.endswith(".let"):
                     with open(inputfile, "r") as inpf:
                         comp(inpf.read(), outputfile, compile, False, search_lettirinclude(currentdir))
+                    if "--asm" in sys.argv:
+                        pass
+                    else:
+                        subprocess.run(f"rm -rf {outputfile}.o {outputfile}.asm", shell=True)
                 else:
                     print("Error: use .let file extension.")
                     sys.exit(1)

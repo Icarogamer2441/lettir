@@ -8,7 +8,12 @@ executing:
 ```console
 python ./lettir.py -o [inputfile.let] [outputexec]
 ```
-don't use the "[" and "]" this [] is only an example!
+don't use the "[" and "]" this [] is only an example!<br>
+you can use --asm to don't remove the assembly output file. example:
+```console
+python ./lettir.py -o example.let example --asm
+```
+you can only use the --asm after the '-o [inputfile.let] [outputexec]'!
 
 ## basics
 to create functions you can use:
