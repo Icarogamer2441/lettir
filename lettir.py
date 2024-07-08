@@ -4,7 +4,7 @@ import os
 
 partnum = [0]
 functions = []
-macros = []
+macros = {}
 
 def search_lettirinclude(diretorio_atual):
     if 'lettirinclude' in os.listdir(diretorio_atual):
@@ -28,6 +28,7 @@ def comp(code, output, compile, islib, libpath):
     in_str = [False]
     finalstr = []
     in_comment = [False]
+    macroname = [""]
 
     def normalcode(codee):
         token = codee
@@ -206,8 +207,7 @@ def comp(code, output, compile, islib, libpath):
                 out.write("  push rax\n")
                 out.write("  push rbx\n")
             elif token in macros:
-                out.write(f"  ;; call macro {token}\n")
-                out.write(f"  {token}\n")
+                normalcode(macros[token])
             elif token == "cprint":
                 out.write("  ;; cprint\n")
                 out.write("  pop rax\n")
@@ -276,9 +276,9 @@ def comp(code, output, compile, islib, libpath):
                     elif token == "macro":
                         token = tokens[tokenpos - 1]
                         tokenpos += 1
-                        out.write(f"%macro {token} 0\n")
                         in_macro[0] = True
-                        macros.append(token)
+                        macroname[0] = token
+                        macros[token] = []
                     elif token == "include":
                         token = tokens[tokenpos - 1]
                         tokenpos += 1
@@ -300,10 +300,8 @@ def comp(code, output, compile, islib, libpath):
                 elif in_macro[0]:
                     if token == "end":
                         in_macro[0] = False
-                        out.write("  ;; end macro\n")
-                        out.write("%endmacro\n")
                     else:
-                        normalcode(token)
+                        macros[macroname[0]].append(token)
     elif islib:
         with open(f"{output}.asm", "a") as out:
             while tokenpos <= len(tokens):
@@ -327,9 +325,9 @@ def comp(code, output, compile, islib, libpath):
                     elif token == "macro":
                         token = tokens[tokenpos - 1]
                         tokenpos += 1
-                        out.write(f"%macro {token} 0\n")
                         in_macro[0] = True
-                        macros.append(token)
+                        macroname[0] = token
+                        macros[token] = []
                     elif token == "include":
                         token = tokens[tokenpos - 1]
                         tokenpos += 1
@@ -351,10 +349,8 @@ def comp(code, output, compile, islib, libpath):
                 elif in_macro[0]:
                     if token == "end":
                         in_macro[0] = False
-                        out.write("  ;; end macro\n")
-                        out.write("%endmacro\n")
                     else:
-                        normalcode(token)
+                        macros[macroname[0]].append(token)
 
     if compile:
         subprocess.run(f"nasm -f elf64 -o {output}.o {output}.asm", shell=True)
