@@ -362,6 +362,8 @@ def comp(code, output, compile, islib, libpath):
         subprocess.run(f"rm -rf {output}.o {output}.asm", shell=True)
 
 if __name__ == "__main__":
+    version = "1.0"
+    print(f"Lettir version: {version}")
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} -o [input file] [output file]")
     else:
