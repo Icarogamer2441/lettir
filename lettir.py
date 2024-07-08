@@ -231,6 +231,7 @@ def comp(code, output, compile, islib, libpath):
                 in_comment[0] = True
             else:
                 print(f"Error: unknown keyword: {token}")
+                sys.exit(1)
         elif in_str[0]:
             if token.endswith("\""):
                 finalstr.append(token.replace("\"", "").replace("\\n", "\n").replace("/n", "\\n"))
