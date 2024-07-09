@@ -201,3 +201,20 @@ fnc init
     0 exit
 end
 ```
+
+# variables
+variables are here because they do not exist in the first version of this programming language. <br>
+here an example:
+```lettir
+fnc init
+    int n1 := 15
+    n1 print
+
+    string msg := Hello world!;
+    
+    11 msg 1 1 syscall
+    10 cprint
+
+    0 exit
+end
+```

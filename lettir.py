@@ -5,6 +5,7 @@ import os
 partnum = [0]
 functions = []
 macros = {}
+variables = {}
 
 def search_lettirinclude(diretorio_atual):
     if 'lettirinclude' in os.listdir(diretorio_atual):
@@ -29,6 +30,7 @@ def comp(code, output, compile, islib, libpath):
     finalstr = []
     in_comment = [False]
     macroname = [""]
+    funccode = []
 
     def normalcode(codee):
         tokens = codee.split()
@@ -246,6 +248,69 @@ def comp(code, output, compile, islib, libpath):
                     out.write("  pop rax\n")
                     out.write("  and rax, rbx\n")
                     out.write("  push rax\n")
+                elif token == "int":
+                    partnum[0] += 1
+                    token = tokens[tokenpos - 1]
+                    name = token
+                    tokenpos += 1
+                    token = tokens[tokenpos - 1]
+                    tokenpos += 1
+                    if token == ":=":
+                        token = tokens[tokenpos - 1]
+                        tokenpos += 1
+                        out.write("  ;; int var\n")
+                        out.write("section .data\n")
+                        out.write(f"  {name} dq {int(token)}\n")
+                        out.write("section .text\n")
+                        out.write(f"part_{partnum[0]}:\n")
+                        variables[name] = "int"
+                    else:
+                        print("Error: use ':=' to atribute variable values")
+                        sys.exit(1)
+                elif token == "string":
+                    partnum[0] += 1
+                    token = tokens[tokenpos - 1]
+                    name = token
+                    tokenpos += 1
+                    token = tokens[tokenpos - 1]
+                    tokenpos += 1
+                    if token == ":=":
+                        finalvalue = []
+                        while tokenpos <= len(tokens):
+                            token = tokens[tokenpos - 1]
+                            tokenpos += 1
+                            if token.endswith(";"):
+                                finalvalue.append(token.replace(";", ""))
+                                out.write("  ;; str var\n")
+                                out.write("section .data\n")
+                                out.write(f'  {name} db \'{" ".join(finalvalue)}\', 0\n')
+                                out.write("section .text\n")
+                                out.write(f"part_{partnum[0]}:\n")
+                                variables[name] = "str"
+                                break
+                            else:
+                                finalvalue.append(token)
+                    else:
+                        print("Error: use ':=' to atribute variable values")
+                        sys.exit(1)
+                elif token in variables.keys():
+                    if variables[token] == "int":
+                        out.write("  ;; int var push\n")
+                        out.write(f"  mov rax, [{token}]\n")
+                        out.write(f"  push rax\n")
+                    elif variables[token] == "str":
+                        out.write("  ;; str var push\n")
+                        out.write(f"  push {token}\n")
+                    else:
+                        print("Error: unknown variable type to push.")
+                        sys.exit(1)
+                elif token == "syscall":
+                    out.write("  ;; syscall\n")
+                    out.write("  pop rax\n")
+                    out.write("  pop rdi\n")
+                    out.write("  pop rsi\n")
+                    out.write("  pop rdx\n")
+                    out.write("  syscall")
                 else:
                     print(f"Error: unknown keyword: {token}")
                     sys.exit(1)
@@ -312,11 +377,14 @@ def comp(code, output, compile, islib, libpath):
                     if token == "end":
                         in_func[0] = False
                         if funcname[0] == "init":
-                            pass
+                            normalcode(" ".join(funccode))
+                            funccode.clear()
                         else:
+                            normalcode(" ".join(funccode))
                             out.write("  ret\n")
+                            funccode.clear()
                     else:
-                        normalcode(token)
+                        funccode.append(token)
                 elif in_macro[0]:
                     if token == "end":
                         in_macro[0] = False
@@ -361,11 +429,14 @@ def comp(code, output, compile, islib, libpath):
                     if token == "end":
                         in_func[0] = False
                         if funcname[0] == "init":
-                            pass
+                            normalcode(" ".join(funccode))
+                            funccode.clear()
                         else:
+                            normalcode(" ".join(funccode))
                             out.write("  ret\n")
+                            funccode.clear()
                     else:
-                        normalcode(token)
+                        funccode.append(token)
                 elif in_macro[0]:
                     if token == "end":
                         in_macro[0] = False
@@ -377,7 +448,7 @@ def comp(code, output, compile, islib, libpath):
         subprocess.run(f"ld -o {output} {output}.o", shell=True)
 
 if __name__ == "__main__":
-    version = "1.0"
+    version = "1.2"
     print(f"Lettir version: {version}")
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} -o [input file] [output file]")

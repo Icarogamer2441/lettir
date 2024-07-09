@@ -1,0 +1,11 @@
+fnc init
+    int n1 := 15
+    n1 print
+
+    string msg := Hello world!;
+    
+    11 msg 1 1 syscall
+    10 cprint
+
+    0 exit
+end
