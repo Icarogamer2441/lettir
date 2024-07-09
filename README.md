@@ -172,10 +172,32 @@ end
 you can do function things with macros but the pushes are not local!
 # strings
 you can create strings!:
-```
+```lettir
 include std.let
 
 fnc init
     "Hello world!\n" puts
+end
+```
+
+# or & and
+you can do 'or' and 'and'. here an example with or:
+```lettir
+fnc init
+    1 1 == 90 80 < or /* 1 == 1 or 90 < 80 */ if
+        100 print
+    ifend
+
+    0 exit
+end
+```
+and with 'and':
+```lettir
+fnc init
+    1 1 == 90 80 > and /* 1 == 1 and 90 > 80 */ if
+        100 print
+    ifend
+
+    0 exit
 end
 ```

@@ -185,7 +185,7 @@ def comp(code, output, compile, islib, libpath):
                     recentif.append(partnum[0])
                 elif token == "ifend":
                     ifnum = recentif.pop()
-                    out.write(f"end_{ifnum}:")
+                    out.write(f"end_{ifnum}:\n")
                 elif token == "while":
                     partnum[0] += 1
                     out.write("  ;; while\n")
@@ -194,7 +194,7 @@ def comp(code, output, compile, islib, libpath):
                 elif token == "whend":
                     whilenum = recentwhile.pop()
                     out.write(f"  jmp whilecode_{whilenum}\n")
-                    out.write(f"end_{whilenum}:")
+                    out.write(f"end_{whilenum}:\n")
                 elif token == "stop":
                     whilenum = recentwhile.pop()
                     recentwhile.append(whilenum)
@@ -234,6 +234,18 @@ def comp(code, output, compile, islib, libpath):
                         in_str[0] = True
                 elif token == "/*":
                     in_comment[0] = True
+                elif token == "or":
+                    out.write("  ;; or\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  or rax, rbx\n")
+                    out.write("  push rax\n")
+                elif token == "and":
+                    out.write("  ;; and\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  and rax, rbx\n")
+                    out.write("  push rax\n")
                 else:
                     print(f"Error: unknown keyword: {token}")
                     sys.exit(1)
