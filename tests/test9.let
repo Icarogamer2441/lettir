@@ -1,0 +1,9 @@
+fnc init
+    0 0 != if
+        10 print
+    else
+        20 print
+    elend
+
+    0 exit
+end

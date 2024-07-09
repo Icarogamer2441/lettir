@@ -182,10 +182,21 @@ def comp(code, output, compile, islib, libpath):
                     out.write("  pop rax\n")
                     out.write("  cmp rax, 1\n")
                     out.write(f"  je ifcode_{partnum[0]}\n")
-                    out.write(f"  jmp end_{partnum[0]}\n")
+                    out.write(f"  jmp else_{partnum[0]}\n")
                     out.write(f"ifcode_{partnum[0]}:\n")
                     recentif.append(partnum[0])
                 elif token == "ifend":
+                    ifnum = recentif.pop()
+                    out.write(f"else_{ifnum}:\n")
+                    out.write(f"  ;; if end\n")
+                    out.write(f"end_{ifnum}:\n")
+                elif token == "else":
+                    ifnum = recentif.pop()
+                    out.write("  ;; else")
+                    out.write(f"  jmp end_{ifnum}\n")
+                    out.write(f"else_{ifnum}:\n")
+                    recentif.append(ifnum)
+                elif token == "elend":
                     ifnum = recentif.pop()
                     out.write(f"end_{ifnum}:\n")
                 elif token == "while":
@@ -310,7 +321,7 @@ def comp(code, output, compile, islib, libpath):
                     out.write("  pop rdi\n")
                     out.write("  pop rsi\n")
                     out.write("  pop rdx\n")
-                    out.write("  syscall")
+                    out.write("  syscall\n")
                 else:
                     print(f"Error: unknown keyword: {token}")
                     sys.exit(1)
@@ -448,7 +459,7 @@ def comp(code, output, compile, islib, libpath):
         subprocess.run(f"ld -o {output} {output}.o", shell=True)
 
 if __name__ == "__main__":
-    version = "1.2"
+    version = "1.3"
     print(f"Lettir version: {version}")
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} -o [input file] [output file]")

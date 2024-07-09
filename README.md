@@ -218,3 +218,17 @@ fnc init
     0 exit
 end
 ```
+# else
+you can use 'else' in if statements (else added in 1.3):
+```lettir
+fnc init
+    0 0 != if
+        10 print
+    else
+        20 print
+    elend
+
+    0 exit
+end
+```
+if you gonna use only if, use 'ifend'. if is with else use 'elend'
