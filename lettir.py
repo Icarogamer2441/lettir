@@ -192,7 +192,7 @@ def comp(code, output, compile, islib, libpath):
                     out.write(f"end_{ifnum}:\n")
                 elif token == "else":
                     ifnum = recentif.pop()
-                    out.write("  ;; else")
+                    out.write("  ;; else\n")
                     out.write(f"  jmp end_{ifnum}\n")
                     out.write(f"else_{ifnum}:\n")
                     recentif.append(ifnum)
