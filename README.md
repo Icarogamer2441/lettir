@@ -251,3 +251,7 @@ fnc init
     20 intset n1
 end
 ```
+
+# shifts
+- `shl` - shift left
+- `shr` - shift right

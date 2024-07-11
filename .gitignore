@@ -2,3 +2,4 @@ main*
 build
 dist
 lettir.spec
+./tests/test11.let~
