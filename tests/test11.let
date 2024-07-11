@@ -1,0 +1,17 @@
+fnc init
+    /* adding 'a' to memory */
+    mem 97 .<
+    /* adding 'b' */
+    mem 1 + 98 .<
+    /* adding 'c' */
+    mem 2 + 99 .<
+
+    /* '.>' push memory to stack in pos 0 in memory and add 'c' to pos 0 of the memory */
+    mem 0 + .> mem 0 + 99 .<
+    /* adding 'd' to pos 1 of memory */
+    mem 1 + .> mem 1 + 100 .<
+    /* adding 'e' to pos 2 of memory */
+    mem 2 + .> mem 2 + 101 .<
+
+    0 exit
+end

@@ -83,6 +83,11 @@ printing the top of stack as ascii:
 65 cprint
 ```
 
+pop:
+```lettir
+10 pop
+```
+
 ## math
 math is supported, you can use:
 ```lettir
@@ -232,3 +237,17 @@ fnc init
 end
 ```
 if you gonna use only if, use 'ifend'. if is with else use 'elend'
+# memory
+- `mem` - push the memory to the stack
+- `.>` - load the memory
+- `.<` - store to the memory
+you can see an code example in (test 11)[./tests/test11.let]
+
+# set new values to int variables
+now you can modify int variables value!:
+```lettir
+fnc init
+    int n1 := 10
+    20 intset n1
+end
+```

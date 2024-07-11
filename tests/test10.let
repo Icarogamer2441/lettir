@@ -1,0 +1,11 @@
+fnc init
+    int n1 := 10
+    n1 print
+
+    /* set new values to int variables */
+    20
+    intset n1
+    n1 print
+
+    0 exit
+end

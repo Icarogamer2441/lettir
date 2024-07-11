@@ -6,6 +6,7 @@ partnum = [0]
 functions = []
 macros = {}
 variables = {}
+strnum = [0]
 
 def search_lettirinclude(diretorio_atual):
     if 'lettirinclude' in os.listdir(diretorio_atual):
@@ -236,14 +237,22 @@ def comp(code, output, compile, islib, libpath):
                     out.write("  mov rdi, 1\n")
                     out.write("  syscall\n")
                 elif token.startswith("\""):
+                    partnum[0] += 1
+                    strnum[0] += 1
                     if token.endswith("\""):
-                        finalstr.append(token.replace("\"", "").replace("\\n", "\n").replace("/n", "\\n"))
-                        out.write("  push 0\n")
-                        for letter in " ".join(finalstr)[::-1]:
-                            out.write(f"  push {ord(letter)}\n")
+                        finalstr.append(token.replace("\"", "").replace("\\n", "', 10, '").replace("/n", "\\n"))
+                        out.write("section .data\n")
+                        out.write(f'  str_{strnum[0]} db \'{" ".join(finalstr)}\', 0\n')
+                        out.write(f"  len_str_{strnum[0]} equ $ - str_{strnum[0]} - 1\n")
+                        out.write("section .text\n")
+                        out.write(f"part_{partnum[0]}:\n")
+                        out.write(f"  ;; pushing string {strnum[0]}\n")
+                        out.write(f"  mov rax, len_str_{strnum[0]}\n")
+                        out.write("  push rax\n")
+                        out.write(f"  push str_{strnum[0]}\n")
                         finalstr.clear()
                     else:
-                        finalstr.append(token.replace("\"", "").replace("\\n", "\n").replace("/n", "\\n"))
+                        finalstr.append(token.replace("\"", "").replace("\\n", "', 10, '").replace("/n", "\\n"))
                         in_str[0] = True
                 elif token == "/*":
                     in_comment[0] = True
@@ -291,16 +300,17 @@ def comp(code, output, compile, islib, libpath):
                             token = tokens[tokenpos - 1]
                             tokenpos += 1
                             if token.endswith(";"):
-                                finalvalue.append(token.replace(";", ""))
+                                finalvalue.append(token.replace(";", "").replace("\\n", "', 10, '"))
                                 out.write("  ;; str var\n")
                                 out.write("section .data\n")
                                 out.write(f'  {name} db \'{" ".join(finalvalue)}\', 0\n')
+                                out.write(f"  len_{name} equ $ - {name} - 1\n")
                                 out.write("section .text\n")
                                 out.write(f"part_{partnum[0]}:\n")
                                 variables[name] = "str"
                                 break
                             else:
-                                finalvalue.append(token)
+                                finalvalue.append(token.replace("\\n", "', 10, '"))
                     else:
                         print("Error: use ':=' to atribute variable values")
                         sys.exit(1)
@@ -311,6 +321,8 @@ def comp(code, output, compile, islib, libpath):
                         out.write(f"  push rax\n")
                     elif variables[token] == "str":
                         out.write("  ;; str var push\n")
+                        out.write(f"  mov rax, len_{token}\n")
+                        out.write("  push rax\n")
                         out.write(f"  push {token}\n")
                     else:
                         print("Error: unknown variable type to push.")
@@ -322,19 +334,59 @@ def comp(code, output, compile, islib, libpath):
                     out.write("  pop rsi\n")
                     out.write("  pop rdx\n")
                     out.write("  syscall\n")
+                elif token == "intset":
+                    token = tokens[tokenpos - 1]
+                    tokenpos += 1
+                    if token in variables.keys():
+                        if variables[token] == "int":
+                            out.write("  ;; intset\n")
+                            out.write("  pop rax\n")
+                            out.write(f"  mov [{token}], rax\n")
+                elif token == "mem":
+                    out.write("  ;; mem\n")
+                    out.write("  push mem\n")
+                elif token == ".>":
+                    out.write("  ;; load memory\n")
+                    out.write("  pop rax\n")
+                    out.write("  xor rbx, rbx\n")
+                    out.write("  mov bl, [rax]\n")
+                    out.write("  push rbx\n")
+                elif token == ".<":
+                    out.write("  ;; store memory\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  mov [rax], bl\n")
+                elif token == "shl":
+                    out.write("  ;; shift left\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  shl rax, rbx\n")
+                    out.write("  push rax\n")
+                elif token == "shr":
+                    out.write("  ;; shift right\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  shr rax, rbx\n")
+                    out.write("  push rax\n")
                 else:
                     print(f"Error: unknown keyword: {token}")
                     sys.exit(1)
             elif in_str[0]:
                 if token.endswith("\""):
-                    finalstr.append(token.replace("\"", "").replace("\\n", "\n").replace("/n", "\\n"))
-                    out.write("  push 0\n")
-                    for letter in " ".join(finalstr)[::-1]:
-                        out.write(f"  push {ord(letter)}\n")
+                    finalstr.append(token.replace("\"", "").replace("\\n", "', 10, '").replace("/n", "\\n"))
+                    out.write("section .data\n")
+                    out.write(f'  str_{strnum[0]} db \'{" ".join(finalstr)}\', 0\n')
+                    out.write(f"  len_str_{strnum[0]} equ $ - str_{strnum[0]} - 1\n")
+                    out.write("section .text\n")
+                    out.write(f"part_{partnum[0]}:\n")
+                    out.write(f"  ;; pushing string {strnum[0]}\n")
+                    out.write(f"  mov rax, len_str_{strnum[0]}\n")
+                    out.write("  push rax\n")
+                    out.write(f"  push str_{strnum[0]}\n")
                     finalstr.clear()
                     in_str[0] = False
                 else:
-                    finalstr.append(token.replace("\"", "").replace("\\n", "\n").replace("/n", "\\n"))
+                    finalstr.append(token.replace("\"", "").replace("\\n", "', 10, '").replace("/n", "\\n"))
             elif in_comment[0]:
                 if token == "*/":
                     in_comment[0] = False
@@ -348,6 +400,7 @@ def comp(code, output, compile, islib, libpath):
             outt.write("  nl db 10, 0\n")
             outt.write("section .bss\n")
             outt.write("  buffer resb 20\n")
+            outt.write("  mem resb 64000\n")
             outt.write("section .text\n")
             outt.write("  global _start\n")
         with open(f"{output}.asm", "a") as out:
@@ -459,7 +512,7 @@ def comp(code, output, compile, islib, libpath):
         subprocess.run(f"ld -o {output} {output}.o", shell=True)
 
 if __name__ == "__main__":
-    version = "1.3"
+    version = "1.4"
     print(f"Lettir version: {version}")
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} -o [input file] [output file]")

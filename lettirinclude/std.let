@@ -1,10 +1,5 @@
 macro puts
-    while
-        dup 0 == if
-            pop stop
-        ifend
-        cprint
-    whend
+    1 1 syscall
 end
 
 macro true
