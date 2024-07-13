@@ -368,6 +368,9 @@ def comp(code, output, compile, islib, libpath):
                     out.write("  pop rax\n")
                     out.write("  shr rax, rbx\n")
                     out.write("  push rax\n")
+                elif token == "ret":
+                    out.write("  ;; ret\n")
+                    out.write("  ret\n")
                 else:
                     print(f"Error: unknown keyword: {token}")
                     sys.exit(1)
@@ -512,7 +515,7 @@ def comp(code, output, compile, islib, libpath):
         subprocess.run(f"ld -o {output} {output}.o", shell=True)
 
 if __name__ == "__main__":
-    version = "1.4"
+    version = "1.5"
     print(f"Lettir version: {version}")
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} -o [input file] [output file]")

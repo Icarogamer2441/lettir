@@ -1,0 +1,15 @@
+fnc aha
+    10 dup 10 == if print ret /* ends the function (you don't need that. you need only if you want) */ ifend
+    print
+    10 print
+end
+
+fnc init
+    /* argc */
+    print
+    /* argv 0 (file name) */
+    print
+    aha
+
+    0 exit
+end

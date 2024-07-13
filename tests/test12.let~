@@ -1,0 +1,7 @@
+fnc init
+    "Hello    \n" split
+    dup "Hello" == if
+        "Hello world!\n" 1 1 syscall
+    ifend
+    0 exit
+end
