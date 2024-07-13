@@ -1,0 +1,10 @@
+fnc init
+    /* shr */
+    10 5 shr
+    /* shl */
+    10 5 shl
+    /* bor */
+    10 9 bor
+    /* band */
+    10 11 band
+end

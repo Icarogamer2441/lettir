@@ -358,19 +358,34 @@ def comp(code, output, compile, islib, libpath):
                     out.write("  mov [rax], bl\n")
                 elif token == "shl":
                     out.write("  ;; shift left\n")
-                    out.write("  pop rbx\n")
+                    out.write("  pop rcx\n")
                     out.write("  pop rax\n")
-                    out.write("  shl rax, rbx\n")
+                    out.write("  shl rax, cl\n")
                     out.write("  push rax\n")
                 elif token == "shr":
                     out.write("  ;; shift right\n")
-                    out.write("  pop rbx\n")
+                    out.write("  pop rcx\n")
                     out.write("  pop rax\n")
-                    out.write("  shr rax, rbx\n")
+                    out.write("  shr rax, cl\n")
                     out.write("  push rax\n")
                 elif token == "ret":
                     out.write("  ;; ret\n")
                     out.write("  ret\n")
+                elif token == "2dup":
+                    out.write("  ;; dup 2 times (2dup)\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  push rax\n")
+                    out.write("  push rbx\n")
+                    out.write("  push rax\n")
+                    out.write("  push rbx\n")
+                elif token == "over":
+                    out.write("  ;; over\n")
+                    out.write("  pop rbx\n")
+                    out.write("  pop rax\n")
+                    out.write("  push rax\n")
+                    out.write("  push rbx\n")
+                    out.write("  push rax\n")
                 else:
                     print(f"Error: unknown keyword: {token}")
                     sys.exit(1)
@@ -515,7 +530,7 @@ def comp(code, output, compile, islib, libpath):
         subprocess.run(f"ld -o {output} {output}.o", shell=True)
 
 if __name__ == "__main__":
-    version = "1.5"
+    version = "1.6"
     print(f"Lettir version: {version}")
     if len(sys.argv) < 2:
         print(f"Usage: {sys.argv[0]} -o [input file] [output file]")

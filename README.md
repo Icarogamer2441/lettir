@@ -255,3 +255,41 @@ end
 # shifts
 - `shl` - shift left
 - `shr` - shift right
+
+# ret and 2dup
+i forgot to put it here but im putting it here now
+```lettir
+include std.let
+
+fnc myfunc
+    0 0 == if
+        ret
+    else
+        "Error: 0 is not equal to 0?!" puts
+	1 exit
+    elend
+end
+
+fnc init
+    myfunc
+    0 exit
+end
+```
+- `ret` - use to stop functions
+- `2dup` - used to duplicate two items on top of the stack
+
+## Bitwise
+
+- `or` - same of `|` and 'or' in python
+- `and` - same of `&` and `and` in python
+
+# over
+- `over` - used to duplicate the second item on top of the stack
+```python
+stack = [10,20]
+b = stack.pop() # b = 20
+a = stack.pop() # a = 10
+stack.append(a) # stack = [10]
+stack.append(b) # stack = [10,20]
+stack.append(a) # stack = [10,20,10]
+```

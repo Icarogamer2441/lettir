@@ -1,0 +1,13 @@
+fnc init
+    /* shr */
+    10 5 shr print
+    /* shl */
+    10 5 shl print
+    /* bor */
+    10 9 or print
+    /* band */
+    10 5 and print
+
+    /* yes, 'and' and 'or' can be used has bitwise */
+    0 exit
+end
